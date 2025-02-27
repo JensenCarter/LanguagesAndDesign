@@ -54,25 +54,18 @@ class Interpreter(ExprVisitor):
         return self.interpret(expr.expression)
 
     def visit_assign_expr(self, expr):
-        raise NotImplementedError("Assignment expressions are not implemented in Stage 2.")
-
+        raise NotImplementedError("not implemented")
     def visit_call_expr(self, expr):
-        raise NotImplementedError("Call expressions are not implemented in Stage 2.")
-
+        raise NotImplementedError("not implemented")
     def visit_get_expr(self, expr):
-        raise NotImplementedError("Property access expressions are not implemented in Stage 2.")
-
+        raise NotImplementedError("not implemented")
     def visit_logical_expr(self, expr):
-        raise NotImplementedError("Logical expressions are not implemented in Stage 2.")
-
+        raise NotImplementedError("not implemented")
     def visit_set_expr(self, expr):
-        raise NotImplementedError("Property setting expressions are not implemented in Stage 2.")
-
+        raise NotImplementedError("not implemented")
     def visit_super_expr(self, expr):
-        raise NotImplementedError("Super expressions are not implemented in Stage 2.")
-
+        raise NotImplementedError("not implemented")
     def visit_this_expr(self, expr):
-        raise NotImplementedError("'this' expressions are not implemented in Stage 2.")
-
+        raise NotImplementedError("not implemented")
     def visit_variable_expr(self, expr):
-        raise NotImplementedError("Variable expressions are not implemented in Stage 2.")
+        raise NotImplementedError("not implemented")

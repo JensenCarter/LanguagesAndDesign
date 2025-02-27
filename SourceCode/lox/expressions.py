@@ -7,51 +7,39 @@ class ExprVisitor(ABC):
     @abstractmethod
     def visit_assign_expr(self, expr: 'Assign') -> Any:
         pass
-
     @abstractmethod
     def visit_binary_expr(self, expr: 'Binary') -> Any:
         pass
-
     @abstractmethod
     def visit_call_expr(self, expr: 'Call') -> Any:
         pass
-
     @abstractmethod
     def visit_get_expr(self, expr: 'Get') -> Any:
         pass
-
     @abstractmethod
     def visit_grouping_expr(self, expr: 'Grouping') -> Any:
         pass
-
     @abstractmethod
     def visit_literal_expr(self, expr: 'Literal') -> Any:
         pass
-
     @abstractmethod
     def visit_logical_expr(self, expr: 'Logical') -> Any:
         pass
-
     @abstractmethod
     def visit_set_expr(self, expr: 'Set') -> Any:
         pass
-
     @abstractmethod
     def visit_super_expr(self, expr: 'Super') -> Any:
         pass
-
     @abstractmethod
     def visit_this_expr(self, expr: 'This') -> Any:
         pass
-
     @abstractmethod
     def visit_unary_expr(self, expr: 'Unary') -> Any:
         pass
-
     @abstractmethod
     def visit_variable_expr(self, expr: 'Variable') -> Any:
         pass
-
 
 class Expr(ABC):
     @abstractmethod
