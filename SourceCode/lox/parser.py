@@ -1,8 +1,5 @@
 from lox.tokens import TokenType
-from lox.expressions import Expr, Binary, Unary, Literal, Grouping
-
-class ParseError(Exception):
-    pass
+from lox.expressions import Binary, Grouping, Literal, Unary
 
 class Parser:
     def __init__(self, tokens):
@@ -78,6 +75,8 @@ class Parser:
     def primary(self):
         if self.match(TokenType.NUMBER):
             return Literal(self.previous().literal)
+        if self.match(TokenType.STRING):
+            return Literal(self.previous().literal)
         if self.match(TokenType.TRUE):
             return Literal(True)
         if self.match(TokenType.FALSE):
@@ -88,7 +87,6 @@ class Parser:
             return Grouping(expr)
         raise Exception("Expected expression.")
 
-    # utility methods
     def match(self, *types):
         for token_type in types:
             if self.check(token_type):

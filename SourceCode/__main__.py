@@ -13,12 +13,10 @@ def main():
     interpreter = Interpreter()
 
     for line_number, line in enumerate(lines, start=1):
-        # Removes whitespace and skips empty lines
-        line = line.strip()
+        # removes whitespace, comments and, skips empty lines
+        line = line.strip().split("#", 1)[0].strip()
         if not line:
             continue
-
-        #print(f"Processing Line {line_number}: {line}")
 
         try:
             lexer = Lexer(line)

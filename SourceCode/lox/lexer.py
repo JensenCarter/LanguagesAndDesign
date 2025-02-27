@@ -18,13 +18,13 @@ class Lexer:
             elif char == ")":
                 self._add_token(TokenType.RPAREN)
                 self._advance()
-            elif char in "+-*/":
-                if char == "-" and (self.current == 0 or self.source[self.current-1].isspace()):
-                    # numeric negation from binary minus
-                    self._add_token(TokenType.MINUS)
-                    self._advance()
-                else:
-                    self._handle_operator(char)
+            elif char == '"':
+                self._string()
+            elif char in "+-–*/":
+                # converts weird dash to normal one
+                if char == "–":
+                    char = "-"
+                self._handle_operator(char)
             elif char == "!":
                 self._advance()
                 if self._peek() == "=":
@@ -62,6 +62,20 @@ class Lexer:
 
         self._add_token(TokenType.EOF)
         return self.tokens
+
+    def _string(self):
+        # advance past opening quotation mark
+        self._advance()
+        start = self.current
+        while self._peek() != '"' and not self._is_at_end():
+            self._advance()
+        if self._is_at_end():
+            raise RuntimeError("Unterminated string literal")
+        # extract content
+        value = self.source[start:self.current]
+        # advance past closing quotation mark
+        self._advance()
+        self._add_token(TokenType.STRING, value, start)
 
     def _handle_operator(self, char):
         operator_map = {
@@ -123,6 +137,8 @@ class Lexer:
     def _add_token(self, type: TokenType, literal=None, start: int = None):
         if type == TokenType.NUMBER:
             lexeme = self.source[start:self.current]
+        elif type == TokenType.STRING:
+            lexeme = self.source[start-1:self.current]
         else:
             lexeme = self.source[self.current:self.current+1] if self.current < len(self.source) else ""
         self.tokens.append(Token(type, lexeme, literal))

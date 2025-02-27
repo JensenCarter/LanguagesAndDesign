@@ -26,6 +26,7 @@ class TokenType(Enum):
     OR = auto()
 
     NUMBER = auto()
+    STRING = auto()
     EOF = auto()
 
 

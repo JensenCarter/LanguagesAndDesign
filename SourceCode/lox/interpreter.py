@@ -11,7 +11,13 @@ class Interpreter(ExprVisitor):
         operator_type = expr.operator.type
 
         if operator_type == TokenType.PLUS:
-            return left + right
+            # support both number addition and string concatenation
+            if isinstance(left, str) and isinstance(right, str):
+                return left + right
+            elif isinstance(left, (int, float)) and isinstance(right, (int, float)):
+                return left + right
+            else:
+                raise Exception("Unsupported operand types for +: {} and {}".format(type(left), type(right)))
         elif operator_type == TokenType.MINUS:
             return left - right
         elif operator_type == TokenType.MUL:
