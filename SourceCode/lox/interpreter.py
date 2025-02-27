@@ -53,7 +53,6 @@ class Interpreter(ExprVisitor):
     def visit_grouping_expr(self, expr):
         return self.interpret(expr.expression)
 
-    # Stub implementations for additional abstract methods (not used in Stage 2)
     def visit_assign_expr(self, expr):
         raise NotImplementedError("Assignment expressions are not implemented in Stage 2.")
 

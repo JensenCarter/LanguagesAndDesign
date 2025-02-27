@@ -4,7 +4,6 @@ from lox.expressions import Expr, Binary, Unary, Literal, Grouping
 class ParseError(Exception):
     pass
 
-# In parser.py
 class Parser:
     def __init__(self, tokens):
         self.tokens = tokens
@@ -89,8 +88,7 @@ class Parser:
             return Grouping(expr)
         raise Exception("Expected expression.")
 
-    # Utility methods for parsing
-
+    # utility methods
     def match(self, *types):
         for token_type in types:
             if self.check(token_type):

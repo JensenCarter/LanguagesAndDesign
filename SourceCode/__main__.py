@@ -13,7 +13,7 @@ def main():
     interpreter = Interpreter()
 
     for line_number, line in enumerate(lines, start=1):
-        # Remove whitespace and skip empty lines.
+        # Removes whitespace and skips empty lines
         line = line.strip()
         if not line:
             continue

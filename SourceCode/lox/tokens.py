@@ -2,28 +2,28 @@ from enum import Enum, auto
 
 
 class TokenType(Enum):
-    # Single-character tokens
+    # single characters
     LPAREN = auto()
     RPAREN = auto()
     PLUS = auto()
     MINUS = auto()
     MUL = auto()
     DIV = auto()
-    BANG = auto()  # For '!'
+    BANG = auto()
 
-    # One or two character tokens
-    EQUAL_EQUAL = auto()  # '=='
-    BANG_EQUAL = auto()  # '!='
-    LESS = auto()  # '<'
-    LESS_EQUAL = auto()  # '<='
-    GREATER = auto()  # '>'
-    GREATER_EQUAL = auto()  # '>='
+    # one or two characters
+    EQUAL_EQUAL = auto()
+    BANG_EQUAL = auto()
+    LESS = auto()
+    LESS_EQUAL = auto()
+    GREATER = auto()
+    GREATER_EQUAL = auto()
 
-    # Keywords for Booleans and logical operators
+    # booleans and logical operators
     TRUE = auto()
     FALSE = auto()
-    AND = auto()  # For 'and'
-    OR = auto()  # For 'or'
+    AND = auto()
+    OR = auto()
 
     NUMBER = auto()
     EOF = auto()

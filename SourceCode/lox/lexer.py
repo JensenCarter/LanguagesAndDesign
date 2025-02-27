@@ -20,8 +20,7 @@ class Lexer:
                 self._advance()
             elif char in "+-*/":
                 if char == "-" and (self.current == 0 or self.source[self.current-1].isspace()):
-                    # This simple heuristic distinguishes numeric negation from binary minus.
-                    # (You might need a more robust solution in a full parser.)
+                    # numeric negation from binary minus
                     self._add_token(TokenType.MINUS)
                     self._advance()
                 else:
