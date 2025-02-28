@@ -2,37 +2,42 @@ from lox.lexer import Lexer
 from lox.parser import Parser
 from lox.interpreter import Interpreter
 
-# file
-file = "test.txt"
 
 def main(file):
-    lines = open(file, "r").readlines()
+    with open(file, "r") as f:
+        lines = f.readlines()
 
-    # initialise interpreter
+    # remove comments and empty lines, then join lines
+    processed_lines = []
+    for line in lines:
+        line = line.split("#", 1)[0].strip()
+        if line:
+            processed_lines.append(line)
+    source = "\n".join(processed_lines)
+
+    # initialise the interpreter.
     interpreter = Interpreter()
 
-    for line_number, line in enumerate(lines, start=1):
-        # remove whitespace and comments
-        line = line.strip().split("#", 1)[0].strip()
-        # skip empty lines
-        if not line:
-            continue
+    try:
+        lexer = Lexer(source)
+        tokens = lexer.tokenize()
+    except Exception as e:
+        print(f"Lexer Error: {e}")
+        return
 
-        # tokenize current line
-        try:
-            lexer = Lexer(line)
-            tokens = lexer.tokenize()
-        except Exception as e:
-            print(f"Line {line_number} Lexer Error: {e}")
-            continue
+    try:
+        parser = Parser(tokens)
+        statements = parser.parse()
+    except Exception as e:
+        print(f"Parser Error: {e}")
+        return
 
-        # parse tokens into statements
-        try:
-            parser = Parser(tokens)
-            statements = parser.parse()
-            interpreter.interpret(statements)
-        except Exception as e:
-            print(f"Line {line_number} Error: {e}")
+    try:
+        interpreter.interpret(statements)
+    except Exception as e:
+        print(f"Runtime Error: {e}")
+
 
 if __name__ == "__main__":
+    file = "test.txt"
     main(file)

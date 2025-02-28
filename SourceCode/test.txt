@@ -13,10 +13,11 @@ print(true == false)
 print(true != false)
 print(5 < 10)
 print(!(5 - 4 > 3 * 2 == !false))
-print(true and true)
-print(false and true)
-print((0 < 1) or false)
-print(false or false)
+print true and true
+print false and true
+print (0 < 1) or false
+print false or false
+
 
 # Stage 3
 print("")
@@ -37,13 +38,36 @@ floatTest = 1.0
 floatTest = floatTest + 5
 print floatTest
 
-stringCatTest = "10 corgis"
-stringCatTest = stringCatTest + 5 + " more corgis"
-print stringCatTest
+# these should purposefully fail
+#stringCatTest = "10 corgis"
+#stringCatTest = stringCatTest + 5 + " more corgis"
+#print stringCatTest
 
-errorTest = 5
-errorTest = errorTest + "insert string here"
-print errorTest
+#errorTest = 5
+#errorTest = errorTest + "insert string here"
+#print errorTest
 
 
+# Stage 5
+print("")
+print("Stage 5")
+is_running = true
+shopping_list = ""
+run_num = 0
 
+while (is_running == true) {
+    item = input("add an item to the shopping list: ")
+    if (item == "") {
+        is_running = false
+    }
+    else{
+        if (item != "n") {
+            shopping_list = shopping_list + item + ", "
+        }
+        else {
+            is_running = false
+        }
+    }
+}
+
+print "Shopping list: " + shopping_list

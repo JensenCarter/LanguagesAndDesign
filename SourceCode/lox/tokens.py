@@ -32,6 +32,13 @@ class TokenType(Enum):
     IDENTIFIER = auto()
     EOF = auto()
 
+    IF = auto()
+    ELSE = auto()
+    WHILE = auto()
+    INPUT = auto()
+    LBRACE = auto()
+    RBRACE = auto()
+
 
 class Token:
     def __init__(self, type: TokenType, lexeme: str, literal: float):

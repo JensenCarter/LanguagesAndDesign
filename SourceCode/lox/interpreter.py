@@ -1,12 +1,38 @@
 from lox.expressions import ExprVisitor, Variable, Assignment, Binary, Unary, Literal, Grouping
 from lox.statements import StmtVisitor, Print, Expression
-from lox.tokens import TokenType
+from lox.tokens import TokenType, Token
+
+
+class Environment:
+    def __init__(self, parent=None):
+        self.values = {}
+        self.parent = parent
+
+    def define(self, name: str, value):
+        self.values[name] = value
+
+    def assign(self, name: Token, value):
+        if name.lexeme in self.values:
+            self.values[name.lexeme] = value
+            return
+        if self.parent:
+            self.parent.assign(name, value)
+            return
+        raise RuntimeError(f"Undefined variable '{name.lexeme}'.")
+
+    def get(self, name: Token):
+        if name.lexeme in self.values:
+            return self.values[name.lexeme]
+        if self.parent:
+            return self.parent.get(name)
+        raise RuntimeError(f"Undefined variable '{name.lexeme}'.")
 
 
 class Interpreter(ExprVisitor, StmtVisitor):
     def __init__(self):
-        self.globals = {}  # global dictionary for variable values
+        self.globals = Environment()
         self.environment = self.globals
+        self.globals.define("input", lambda prompt: input(prompt))
 
     def interpret(self, statements):
         for stmt in statements:
@@ -22,14 +48,16 @@ class Interpreter(ExprVisitor, StmtVisitor):
 
     def visit_assignment_expr(self, expr):
         value = self.evaluate(expr.value)
-        self.globals[expr.name] = value  # store in global dictionary
+        try:
+            # assign the variable if it exists
+            self.environment.assign(expr.name, value)
+        except RuntimeError:
+            # if not define it
+            self.environment.define(expr.name.lexeme, value)
         return value
 
     def visit_variable_expr(self, expr):
-        # look up variables value
-        if expr.name in self.globals:
-            return self.globals[expr.name]
-        raise RuntimeError(f"Undefined variable '{expr.name}'.")
+        return self.environment.get(expr.name)
 
     def visit_binary_expr(self, expr):
         left = self.evaluate(expr.left)
@@ -84,7 +112,12 @@ class Interpreter(ExprVisitor, StmtVisitor):
         return self.evaluate(expr.expression)
 
     def visit_call_expr(self, expr):
-        raise NotImplementedError("not implemented")
+        callee = self.evaluate(expr.callee)
+        arguments = [self.evaluate(arg) for arg in expr.arguments]
+        if callable(callee):
+            return callee(*arguments)
+        else:
+            raise RuntimeError("Can only call functions")
 
     def visit_get_expr(self, expr):
         raise NotImplementedError("not implemented")
@@ -113,3 +146,25 @@ class Interpreter(ExprVisitor, StmtVisitor):
 
     def evaluate(self, expr):
         return expr.accept(self)
+
+    def visit_if_stmt(self, stmt):
+        if self.is_truthy(self.evaluate(stmt.condition)):
+            self.execute(stmt.then_branch)
+        elif stmt.else_branch is not None:
+            self.execute(stmt.else_branch)
+
+    def visit_while_stmt(self, stmt):
+        while self.is_truthy(self.evaluate(stmt.condition)):
+            self.execute(stmt.body)
+
+    def visit_block_stmt(self, stmt):
+        previous = self.environment
+        self.environment = Environment(previous)
+        try:
+            for statement in stmt.statements:
+                self.execute(statement)
+        finally:
+            self.environment = previous
+
+    def execute(self, stmt):
+        stmt.accept(self)
