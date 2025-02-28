@@ -5,7 +5,7 @@ from lox.tokens import Token
 
 class ExprVisitor(ABC):
     @abstractmethod
-    def visit_assign_expr(self, expr: 'Assign') -> Any:
+    def visit_assignment_expr(self, expr: 'Assignment') -> Any:
         pass
     @abstractmethod
     def visit_binary_expr(self, expr: 'Binary') -> Any:
@@ -41,19 +41,20 @@ class ExprVisitor(ABC):
     def visit_variable_expr(self, expr: 'Variable') -> Any:
         pass
 
+
 class Expr(ABC):
     @abstractmethod
     def accept(self, visitor: ExprVisitor) -> Any:
         pass
 
 
-class Assign(Expr):
+class Assignment(Expr):
     def __init__(self, name: Token, value: Expr) -> None:
         self.name = name
         self.value = value
 
     def accept(self, visitor: ExprVisitor) -> Any:
-        return visitor.visit_assign_expr(self)
+        return visitor.visit_assignment_expr(self)
 
 
 class Binary(Expr):

@@ -1,5 +1,6 @@
 from lox.tokens import TokenType
-from lox.expressions import Binary, Grouping, Literal, Unary
+from lox.expressions import Binary, Grouping, Literal, Unary, Variable, Assignment
+from lox.statements import Print, Expression
 
 class Parser:
     def __init__(self, tokens):
@@ -7,14 +8,38 @@ class Parser:
         self.current = 0
 
     def parse(self):
-        try:
-            return self.expression()
-        except Exception as e:
-            print(e)
-            return None
+        # store parsed statements
+        statements = []
+        while not self._is_at_end():
+            statements.append(self.statement())
+        return statements
+
+    def statement(self):
+        # check if token is print statement or an expression
+        if self.match(TokenType.PRINT):
+            return self.print_statement()
+        return self.expression_statement()
+
+    def print_statement(self):
+        expr = self.expression()
+        return Print(expr)
+
+    def expression_statement(self):
+        expr = self.expression()
+        return Expression(expr)
 
     def expression(self):
-        return self.logic_or()
+        return self.assignment()
+
+    def assignment(self):
+        expr = self.logic_or()
+        if self.match(TokenType.EQUAL):
+            equals = self.previous()
+            value = self.assignment()
+            if isinstance(expr, Variable):
+                return Assignment(expr.name, value)
+            raise RuntimeError("Invalid assignment target.")
+        return expr
 
     def logic_or(self):
         expr = self.logic_and()
@@ -66,6 +91,7 @@ class Parser:
         return expr
 
     def unary(self):
+        # handle not or negative operations
         if self.match(TokenType.BANG, TokenType.MINUS):
             operator = self.previous()
             right = self.unary()
@@ -81,13 +107,17 @@ class Parser:
             return Literal(True)
         if self.match(TokenType.FALSE):
             return Literal(False)
+        if self.match(TokenType.IDENTIFIER):
+            return Variable(self.previous().literal)
         if self.match(TokenType.LPAREN):
             expr = self.expression()
             self.consume(TokenType.RPAREN, "Expect ')' after expression.")
             return Grouping(expr)
+
         raise Exception("Expected expression.")
 
     def match(self, *types):
+        # check if token matched one of given types
         for token_type in types:
             if self.check(token_type):
                 self.advance()
@@ -95,11 +125,11 @@ class Parser:
         return False
 
     def check(self, token_type):
-        if self._is_at_end():
-            return False
-        return self.peek().type == token_type
+        # check if current token matches expected type
+        return not self._is_at_end() and self.peek().type == token_type
 
     def advance(self):
+        # move to next token
         if not self._is_at_end():
             self.current += 1
         return self.previous()

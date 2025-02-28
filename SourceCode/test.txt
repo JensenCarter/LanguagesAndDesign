@@ -1,23 +1,49 @@
 # Stage 1
-1 – 2
-2.5 + 2.5 - 1.25
-(10 * 2) / 6
-8.5 / (2 * 9) - -3 # has the weird dash
-(10+2/(3+6))/2.1
+print("Stage 1")
+print(1 – 2)
+print(2.5 + 2.5 - 1.25)
+print((10 * 2) / 6)
+print(8.5 / (2 * 9) - -3) # has the weird dash
+print((10+2/(3+6))/2.1)
 
 # Stage 2
-true == false
-true != false
-(5 < 10)
-!(5 - 4 > 3 * 2 == !false)
-true and true
-false and true
-(0 < 1) or false
-false or false
+print("")
+print("Stage 2")
+print(true == false)
+print(true != false)
+print(5 < 10)
+print(!(5 - 4 > 3 * 2 == !false))
+print(true and true)
+print(false and true)
+print((0 < 1) or false)
+print(false or false)
 
 # Stage 3
-"hello" + " " + "world"
-"foo" + "bar" == "foobar"
-"10 corgis" != "10" + "corgis"
-false == "false"
+print("")
+print("Stage 3")
+print("hello" + " " + "world")
+print("foo" + "bar" == "foobar")
+print("10 corgis" != "10" + "corgis")
+print(false == "false")
+
+# Stage 4
+print("")
+print("Stage 4")
+quickMaths = 10
+quickMaths = quickMaths + 2
+print quickMaths
+
+floatTest = 1.0
+floatTest = floatTest + 5
+print floatTest
+
+stringCatTest = "10 corgis"
+stringCatTest = stringCatTest + 5 + " more corgis"
+print stringCatTest
+
+errorTest = 5
+errorTest = errorTest + "insert string here"
+print errorTest
+
+
 
