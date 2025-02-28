@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Any
+from typing import Any, List
 from lox.expressions import Expr
 
 
@@ -33,3 +33,30 @@ class Print(Stmt):
 
     def accept(self, visitor: StmtVisitor) -> Any:
         return visitor.visit_print_stmt(self)
+
+
+class IfStmt(Stmt):
+    def __init__(self, condition: Expr, then_branch: Stmt, else_branch: Stmt = None):
+        self.condition = condition
+        self.then_branch = then_branch
+        self.else_branch = else_branch
+
+    def accept(self, visitor: StmtVisitor):
+        return visitor.visit_if_stmt(self)
+
+
+class WhileStmt(Stmt):
+    def __init__(self, condition: Expr, body: Stmt):
+        self.condition = condition
+        self.body = body
+
+    def accept(self, visitor: StmtVisitor):
+        return visitor.visit_while_stmt(self)
+
+
+class BlockStmt(Stmt):
+    def __init__(self, statements: List[Stmt]):
+        self.statements = statements
+
+    def accept(self, visitor: StmtVisitor):
+        return visitor.visit_block_stmt(self)

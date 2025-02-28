@@ -1,6 +1,7 @@
 from lox.tokens import TokenType
-from lox.expressions import Binary, Grouping, Literal, Unary, Variable, Assignment
-from lox.statements import Print, Expression
+from lox.expressions import Binary, Grouping, Literal, Unary, Variable, Assignment, Call
+from lox.statements import Print, Expression, IfStmt, WhileStmt, BlockStmt
+
 
 class Parser:
     def __init__(self, tokens):
@@ -15,10 +16,16 @@ class Parser:
         return statements
 
     def statement(self):
-        # check if token is print statement or an expression
         if self.match(TokenType.PRINT):
             return self.print_statement()
-        return self.expression_statement()
+        elif self.match(TokenType.IF):
+            return self.if_statement()
+        elif self.match(TokenType.WHILE):
+            return self.while_statement()
+        elif self.match(TokenType.LBRACE):
+            return self.block_statement()
+        else:
+            return self.expression_statement()
 
     def print_statement(self):
         expr = self.expression()
@@ -99,22 +106,30 @@ class Parser:
         return self.primary()
 
     def primary(self):
-        if self.match(TokenType.NUMBER):
-            return Literal(self.previous().literal)
-        if self.match(TokenType.STRING):
-            return Literal(self.previous().literal)
-        if self.match(TokenType.TRUE):
-            return Literal(True)
-        if self.match(TokenType.FALSE):
-            return Literal(False)
-        if self.match(TokenType.IDENTIFIER):
-            return Variable(self.previous().literal)
-        if self.match(TokenType.LPAREN):
-            expr = self.expression()
+        if self.match(TokenType.NUMBER, TokenType.STRING):
+            expr = Literal(self.previous().literal)
+        elif self.match(TokenType.TRUE):
+            expr = Literal(True)
+        elif self.match(TokenType.FALSE):
+            expr = Literal(False)
+        elif self.match(TokenType.IDENTIFIER, TokenType.INPUT):
+            expr = Variable(self.previous())
+        elif self.match(TokenType.LPAREN):
+            expr = Grouping(self.expression())
             self.consume(TokenType.RPAREN, "Expect ')' after expression.")
-            return Grouping(expr)
+        else:
+            raise RuntimeError("Expected expression.")
+        return self.finish_call(expr)
 
-        raise Exception("Expected expression.")
+    def finish_call(self, callee):
+        while self.check(TokenType.LPAREN):
+            paren = self.advance()
+            arguments = []
+            if not self.check(TokenType.RPAREN):
+                arguments.append(self.expression())
+            self.consume(TokenType.RPAREN, "Expect ')' after arguments.")
+            callee = Call(callee, paren, arguments)
+        return callee
 
     def match(self, *types):
         # check if token matched one of given types
@@ -147,3 +162,28 @@ class Parser:
         if self.check(token_type):
             return self.advance()
         raise Exception(message)
+
+    def block_statement(self):
+        self.consume(TokenType.LBRACE, "Expect '{' to start block.")
+        statements = []
+        while not self.check(TokenType.RBRACE) and not self._is_at_end():
+            statements.append(self.statement())
+        self.consume(TokenType.RBRACE, "Expect '}' after block.")
+        return BlockStmt(statements)
+
+    def if_statement(self):
+        self.consume(TokenType.LPAREN, "Expect '(' after 'if'.")
+        condition = self.expression()
+        self.consume(TokenType.RPAREN, "Expect ')' after condition.")
+        then_branch = self.block_statement()
+        else_branch = None
+        if self.match(TokenType.ELSE):
+            else_branch = self.block_statement()
+        return IfStmt(condition, then_branch, else_branch)
+
+    def while_statement(self):
+        self.consume(TokenType.LPAREN, "Expect '(' after 'while'.")
+        condition = self.expression()
+        self.consume(TokenType.RPAREN, "Expect ')' after condition.")
+        body = self.block_statement()
+        return WhileStmt(condition, body)

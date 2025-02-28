@@ -20,6 +20,12 @@ class Lexer:
             elif char == ")":
                 self._add_token(TokenType.RPAREN)
                 self._advance()
+            elif char == "{":
+                self._add_token(TokenType.LBRACE)
+                self._advance()
+            elif char == "}":
+                self._add_token(TokenType.RBRACE)
+                self._advance()
             elif char == '"':
                 self._string()
             elif char in "+-–*/":
@@ -96,7 +102,7 @@ class Lexer:
         while self._is_digit(self._peek()):
             self._advance()
 
-        if self._peek() == ".": # handle decimals for floats
+        if self._peek() == ".":  # handle decimals for floats
             is_float = True
             self._advance()
             if not self._is_digit(self._peek()):
@@ -112,19 +118,20 @@ class Lexer:
         start = self.current
         while self._peek().isalnum() or self._peek() == "_":
             self._advance()
-
         text = self.source[start:self.current]
-
         keywords = {
             "true": TokenType.TRUE,
             "false": TokenType.FALSE,
+            "print": TokenType.PRINT,
+            "if": TokenType.IF,
+            "else": TokenType.ELSE,
+            "while": TokenType.WHILE,
+            "input": TokenType.INPUT,
             "and": TokenType.AND,
             "or": TokenType.OR,
-            "print": TokenType.PRINT
         }
-
-        token_type = keywords.get(text, TokenType.IDENTIFIER)  # check if keyword or identifier
-        self._add_token(token_type, text)
+        token_type = keywords.get(text, TokenType.IDENTIFIER)
+        self._add_token(token_type, text, start)
 
     def _advance(self):
         self.current += 1
@@ -143,6 +150,32 @@ class Lexer:
             lexeme = self.source[start:self.current]
         elif type == TokenType.STRING:
             lexeme = self.source[start - 1:self.current]
+        elif start is not None:
+            lexeme = self.source[start:self.current]
         else:
             lexeme = self.source[self.current:self.current + 1] if self.current < len(self.source) else ""
         self.tokens.append(Token(type, lexeme, literal))
+
+class Environment:
+    def __init__(self, parent=None):
+        self.values = {}
+        self.parent = parent
+
+    def define(self, name: str, value):
+        self.values[name] = value
+
+    def assign(self, name: Token, value):
+        if name.lexeme in self.values:
+            self.values[name.lexeme] = value
+            return
+        if self.parent:
+            self.parent.assign(name, value)
+            return
+        raise RuntimeError(f"Undefined variable '{name.lexeme}'.")
+
+    def get(self, name: Token):
+        if name.lexeme in self.values:
+            return self.values[name.lexeme]
+        if self.parent:
+            return self.parent.get(name)
+        raise RuntimeError(f"Undefined variable '{name.lexeme}'.")
