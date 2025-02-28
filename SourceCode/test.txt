@@ -53,21 +53,25 @@ print("")
 print("Stage 5")
 is_running = true
 shopping_list = ""
-run_num = 0
+run_num = 1
 
+# nested while loops with nested if-else statements
 while (is_running == true) {
-    item = input("add an item to the shopping list: ")
-    if (item == "") {
-        is_running = false
-    }
-    else{
-        if (item != "n") {
-            shopping_list = shopping_list + item + ", "
-        }
-        else {
+    while (run_num <= 3){
+        item = input("add an item to the shopping list: ")
+        if (item == "") {
             is_running = false
         }
+        else{
+            if (item != "n") {
+                shopping_list = shopping_list + item + ", "
+            }
+            else {
+                is_running = false
+            }
+        }
+        run_num = run_num + 1
     }
+    is_running = false
 }
-
 print "Shopping list: " + shopping_list
