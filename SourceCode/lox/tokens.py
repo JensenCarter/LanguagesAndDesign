@@ -10,6 +10,7 @@ class TokenType(Enum):
     MUL = auto()
     DIV = auto()
     BANG = auto()
+    EQUAL = auto()
 
     # one or two characters
     EQUAL_EQUAL = auto()
@@ -24,9 +25,11 @@ class TokenType(Enum):
     FALSE = auto()
     AND = auto()
     OR = auto()
+    PRINT = auto()
 
     NUMBER = auto()
     STRING = auto()
+    IDENTIFIER = auto()
     EOF = auto()
 
 

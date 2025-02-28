@@ -1,5 +1,6 @@
 from lox.tokens import Token, TokenType
 
+
 class Lexer:
     def __init__(self, source: str):
         self.source = source
@@ -7,6 +8,7 @@ class Lexer:
         self.current = 0
 
     def tokenize(self):
+        # loop through code and generate tokens
         while not self._is_at_end():
             char = self._peek()
 
@@ -38,7 +40,7 @@ class Lexer:
                     self._advance()
                     self._add_token(TokenType.EQUAL_EQUAL)
                 else:
-                    raise RuntimeError("Unexpected '='")
+                    self._add_token(TokenType.EQUAL)
             elif char in "<>":
                 self._advance()
                 if self._peek() == "=":
@@ -53,18 +55,18 @@ class Lexer:
                         self._add_token(TokenType.LESS)
                     else:
                         self._add_token(TokenType.GREATER)
-            elif char.isdigit() or char == ".":
+            elif char.isdigit() or char == ".":  # for decimals
                 self._number()
-            elif char.isalpha():
+            elif char.isalpha() or char == "_":  # for variables
                 self._identifier()
             else:
                 raise RuntimeError(f"Unexpected character: {char}")
 
-        self._add_token(TokenType.EOF)
+        self._add_token(TokenType.EOF)  # end of file token
         return self.tokens
 
     def _string(self):
-        # advance past opening quotation mark
+        # skip opening quotation mark
         self._advance()
         start = self.current
         while self._peek() != '"' and not self._is_at_end():
@@ -94,7 +96,7 @@ class Lexer:
         while self._is_digit(self._peek()):
             self._advance()
 
-        if self._peek() == ".":
+        if self._peek() == ".": # handle decimals for floats
             is_float = True
             self._advance()
             if not self._is_digit(self._peek()):
@@ -108,19 +110,21 @@ class Lexer:
 
     def _identifier(self):
         start = self.current
-        while self._peek().isalnum():
+        while self._peek().isalnum() or self._peek() == "_":
             self._advance()
+
         text = self.source[start:self.current]
+
         keywords = {
             "true": TokenType.TRUE,
             "false": TokenType.FALSE,
             "and": TokenType.AND,
             "or": TokenType.OR,
+            "print": TokenType.PRINT
         }
-        token_type = keywords.get(text)
-        if token_type is None:
-            raise RuntimeError(f"Unexpected identifier: {text}")
-        self._add_token(token_type)
+
+        token_type = keywords.get(text, TokenType.IDENTIFIER)  # check if keyword or identifier
+        self._add_token(token_type, text)
 
     def _advance(self):
         self.current += 1
@@ -138,7 +142,7 @@ class Lexer:
         if type == TokenType.NUMBER:
             lexeme = self.source[start:self.current]
         elif type == TokenType.STRING:
-            lexeme = self.source[start-1:self.current]
+            lexeme = self.source[start - 1:self.current]
         else:
-            lexeme = self.source[self.current:self.current+1] if self.current < len(self.source) else ""
+            lexeme = self.source[self.current:self.current + 1] if self.current < len(self.source) else ""
         self.tokens.append(Token(type, lexeme, literal))
