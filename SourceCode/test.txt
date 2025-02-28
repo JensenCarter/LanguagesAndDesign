@@ -45,5 +45,14 @@ errorTest = 5
 errorTest = errorTest + "insert string here"
 print errorTest
 
+# Stage 5
+print("")
+print("Stage 4")
+is_running = true
+shopping_list = ""
+print(is_running)
+print(shopping_list)
+
+
 
 
